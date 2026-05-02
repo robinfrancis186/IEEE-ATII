@@ -35,7 +35,11 @@ export default function ResourcesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <Input placeholder="Search resources, publications, or topics..." className="pl-12 h-14 bg-white border-slate-200 text-lg shadow-sm" />
+              <Input
+                placeholder="Search resources, publications, or topics..."
+                aria-label="Search resources, publications, or topics"
+                className="pl-12 h-14 bg-white border-slate-200 text-lg shadow-sm"
+              />
             </div>
             <Button className="h-14 px-8 bg-orange hover:bg-orange/90 text-white font-bold text-base shrink-0">Search</Button>
           </div>

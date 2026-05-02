@@ -74,7 +74,11 @@ export default function InitiativesPage() {
           <div className="flex w-full md:w-auto gap-3">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input placeholder="Search initiatives..." className="pl-9 bg-slate-50 border-slate-200" />
+              <Input
+                placeholder="Search initiatives..."
+                aria-label="Search initiatives"
+                className="pl-9 bg-slate-50 border-slate-200"
+              />
             </div>
             <Button variant="outline" className="border-slate-200 text-navy font-bold shrink-0">
               <Filter className="w-4 h-4 mr-2" /> Filters
