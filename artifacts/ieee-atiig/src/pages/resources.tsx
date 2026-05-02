@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { Search, FileText, Download, PlayCircle, Filter, BookOpen, ExternalLink, FileDown, ArrowRight } from "lucide-react";
 
 import resourcesHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_10_PM_(7)_1777748003996.png";

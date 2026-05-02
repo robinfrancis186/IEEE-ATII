@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { Users, Star, Handshake, Heart, ArrowRight, Mail } from "lucide-react";
 import { 
   Accordion,

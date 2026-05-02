@@ -14,7 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, ArrowRight, Activity, Users, Calendar, Heart, Lightbulb, Globe } from "lucide-react";
 import { FaLinkedin, FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
@@ -40,7 +40,7 @@ export default function ContactPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-2">
-                <Link href="/" className="hover:text-navy transition-colors">Home</Link>
+                <Link to="/" className="hover:text-navy transition-colors">Home</Link>
                 <span>/</span>
                 <span className="text-navy">Contact</span>
               </div>
@@ -180,7 +180,7 @@ export default function ContactPage() {
                 <div className="flex items-start space-x-3 pt-2">
                   <Checkbox id="terms" required className="mt-1" />
                   <Label htmlFor="terms" className="text-sm text-slate-600 font-normal leading-relaxed">
-                    I agree to the <Link href="/privacy" className="text-navy font-medium underline hover:text-orange">privacy policy</Link> and <Link href="/terms" className="text-navy font-medium underline hover:text-orange">terms of use</Link>. We will never spam you or share your details.
+                    I agree to the <Link to="/privacy" className="text-navy font-medium underline hover:text-orange">privacy policy</Link> and <Link to="/terms" className="text-navy font-medium underline hover:text-orange">terms of use</Link>. We will never spam you or share your details.
                   </Label>
                 </div>
                 

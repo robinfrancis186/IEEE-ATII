@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { NewsletterStrip } from "@/components/NewsletterStrip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight } from "lucide-react";
 
@@ -22,7 +22,7 @@ export default function NewsEventsPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-2">
-                <Link href="/" className="hover:text-navy transition-colors">Home</Link>
+                <Link to="/" className="hover:text-navy transition-colors">Home</Link>
                 <span>/</span>
                 <span className="text-navy">News & Events</span>
               </div>

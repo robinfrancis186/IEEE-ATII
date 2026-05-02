@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, ArrowRight, Lightbulb, Users, BookOpen, Building, GraduationCap, Globe } from "lucide-react";
 
@@ -21,7 +21,7 @@ export default function InitiativesPage() {
           <div className="flex flex-col lg:flex-row gap-12 items-center">
             <div className="flex-1">
               <div className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-2">
-                <Link href="/" className="hover:text-navy transition-colors">Home</Link>
+                <Link to="/" className="hover:text-navy transition-colors">Home</Link>
                 <span>/</span>
                 <span className="text-navy">Initiatives</span>
               </div>
@@ -171,7 +171,7 @@ export default function InitiativesPage() {
                     })}
                   </div>
 
-                  <Link href={`/projects`} className={`font-bold text-lg inline-flex items-center group ${style.text}`}>
+                  <Link to={`/projects`} className={`font-bold text-lg inline-flex items-center group ${style.text}`}>
                     Explore Projects <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                   </Link>
                 </motion.div>
@@ -208,7 +208,7 @@ export default function InitiativesPage() {
               
               <div>
                 <Button asChild className="bg-orange hover:bg-orange/90 text-white font-bold h-14 px-8 text-base">
-                  <Link href="/projects#featured">View Lab Projects <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                  <Link to="/projects#featured">View Lab Projects <ArrowRight className="ml-2 w-5 h-5" /></Link>
                 </Button>
               </div>
             </div>

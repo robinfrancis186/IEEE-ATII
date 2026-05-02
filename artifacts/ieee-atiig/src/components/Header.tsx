@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import colorLogo from "@assets/ATII_CLR_1777748066607.png";
+import blackLogo from "@assets/ATII_BLK_1777748066607.png";
 
 const NAV_ITEMS = [
   { title: "Home", href: "/", dropdown: null },
@@ -83,9 +84,10 @@ const NAV_ITEMS = [
 ];
 
 export function Header() {
-  const [location] = useLocation();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [textOnly, setTextOnly] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,6 +96,16 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTextOnly(document.body.classList.contains("text-only"));
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const currentLogo = textOnly ? blackLogo : colorLogo;
 
   return (
     <header
@@ -104,8 +116,12 @@ export function Header() {
       data-testid="header-main"
     >
       <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
-        <Link href="/" className="flex-shrink-0" data-testid="link-logo-header">
-          <img src={colorLogo} alt="IEEE Kerala ATIIG Logo" className="h-14 w-auto object-contain logo-img" />
+        <Link to="/" className="flex-shrink-0" data-testid="link-logo-header">
+          <img
+            src={currentLogo}
+            alt="IEEE Kerala ATIIG Logo"
+            className="h-14 w-auto object-contain logo-img"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -114,14 +130,14 @@ export function Header() {
             <NavigationMenuList className="gap-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
-                  location === item.href ||
-                  (item.href !== "/" && location.startsWith(item.href));
+                  location.pathname === item.href ||
+                  (item.href !== "/" && location.pathname.startsWith(item.href));
 
                 if (!item.dropdown) {
                   return (
                     <NavigationMenuItem key={item.title}>
                       <Link
-                        href={item.href}
+                        to={item.href}
                         className={cn(
                           "inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-md transition-colors",
                           "text-navy bg-transparent hover:bg-slate-100 hover:text-orange",
@@ -151,7 +167,7 @@ export function Header() {
                         {item.dropdown.map((subItem) => (
                           <li key={subItem.title}>
                             <Link
-                              href={subItem.href}
+                              to={subItem.href}
                               className="block select-none rounded-md p-3 text-sm font-medium text-navy leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-orange focus:bg-slate-100 focus:text-orange"
                               data-testid={`nav-sublink-${subItem.title.toLowerCase().replace(/\s+/g, "-")}`}
                             >
@@ -183,7 +199,7 @@ export function Header() {
             className="hidden md:flex bg-[#FD7B09] hover:bg-[#e06b08] text-white font-bold tracking-wide shadow-sm"
             data-testid="btn-donate-header"
           >
-            <Link href="/get-involved#donate">Donate</Link>
+            <Link to="/get-involved#donate">Donate</Link>
           </Button>
 
           {/* Mobile Menu */}
@@ -206,18 +222,25 @@ export function Header() {
             >
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col gap-4">
+                <div className="mb-4">
+                  <img
+                    src={blackLogo}
+                    alt="IEEE Kerala ATIIG"
+                    className="h-12 w-auto object-contain"
+                  />
+                </div>
                 <nav className="flex flex-col gap-1">
                   {NAV_ITEMS.map((item) => {
                     const isActive =
-                      location === item.href ||
-                      (item.href !== "/" && location.startsWith(item.href));
+                      location.pathname === item.href ||
+                      (item.href !== "/" && location.pathname.startsWith(item.href));
                     return (
                       <div
                         key={item.title}
                         className="flex flex-col border-b border-slate-100 pb-2"
                       >
                         <Link
-                          href={item.href}
+                          to={item.href}
                           className={cn(
                             "py-2 font-bold text-lg transition-colors",
                             isActive ? "text-orange" : "text-navy"
@@ -232,7 +255,7 @@ export function Header() {
                             {item.dropdown.map((subItem) => (
                               <Link
                                 key={subItem.title}
-                                href={subItem.href}
+                                to={subItem.href}
                                 className="text-slate-600 hover:text-orange py-1 transition-colors font-medium text-sm"
                                 onClick={() => setIsOpen(false)}
                               >
@@ -259,7 +282,7 @@ export function Header() {
                     data-testid="btn-mobile-donate"
                   >
                     <Link
-                      href="/get-involved#donate"
+                      to="/get-involved#donate"
                       onClick={() => setIsOpen(false)}
                     >
                       Donate Now

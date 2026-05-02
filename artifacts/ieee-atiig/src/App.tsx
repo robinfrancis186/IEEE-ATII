@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,17 +16,17 @@ const queryClient = new QueryClient();
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/about" component={AboutPage} />
-      <Route path="/initiatives" component={InitiativesPage} />
-      <Route path="/projects" component={ProjectsPage} />
-      <Route path="/resources" component={ResourcesPage} />
-      <Route path="/get-involved" component={GetInvolvedPage} />
-      <Route path="/news-events" component={NewsEventsPage} />
-      <Route path="/contact" component={ContactPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/initiatives" element={<InitiativesPage />} />
+      <Route path="/projects" element={<ProjectsPage />} />
+      <Route path="/resources" element={<ResourcesPage />} />
+      <Route path="/get-involved" element={<GetInvolvedPage />} />
+      <Route path="/news-events" element={<NewsEventsPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
@@ -34,10 +34,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <Router />
-        </WouterRouter>
-        <Toaster />
+          <Toaster />
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

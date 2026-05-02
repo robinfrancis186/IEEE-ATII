@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { StatCounter } from "@/components/StatCounter";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Activity, BookOpen, Accessibility as WheelchairIcon, Briefcase, Users, FlaskConical } from "lucide-react";
 import { 
@@ -379,10 +379,10 @@ export default function ProjectsPage() {
           <h2 className="text-3xl md:text-4xl font-black text-white mb-8">Be a Part of Inclusive Impact</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="bg-navy hover:bg-navy/90 text-white font-bold px-8 h-14 text-base shadow-xl">
-              <Link href="/get-involved#partner">Partner With Us</Link>
+              <Link to="/get-involved#partner">Partner With Us</Link>
             </Button>
             <Button asChild size="lg" className="bg-orange hover:bg-orange/90 text-white font-bold px-8 h-14 text-base shadow-xl">
-              <Link href="/get-involved#donate">Donate Now</Link>
+              <Link to="/get-involved#donate">Donate Now</Link>
             </Button>
           </div>
         </div>

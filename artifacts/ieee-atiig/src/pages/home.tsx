@@ -3,7 +3,7 @@ import { StatCounter } from "@/components/StatCounter";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { NewsletterStrip } from "@/components/NewsletterStrip";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ArrowRight, 
@@ -74,10 +74,10 @@ export default function HomePage() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="bg-navy hover:bg-navy/90 text-white font-bold h-14 px-8 text-base">
-                  <Link href="/initiatives">Explore Initiatives</Link>
+                  <Link to="/initiatives">Explore Initiatives</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="border-2 border-navy text-navy hover:bg-navy/5 font-bold h-14 px-8 text-base">
-                  <Link href="/get-involved">Get Involved</Link>
+                  <Link to="/get-involved">Get Involved</Link>
                 </Button>
               </div>
             </motion.div>
@@ -149,7 +149,7 @@ export default function HomePage() {
 
           <div className="text-center">
             <Button variant="link" className="text-orange font-bold text-lg group" asChild>
-              <Link href="/about">View All Focus Areas <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+              <Link to="/about">View All Focus Areas <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
             </Button>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function HomePage() {
               <p className="text-lg text-slate-600">Action-oriented programs designed to break down barriers and build a more inclusive society.</p>
             </div>
             <Button asChild className="bg-navy hover:bg-navy/90 text-white font-bold px-6 shrink-0">
-              <Link href="/initiatives">All Initiatives</Link>
+              <Link to="/initiatives">All Initiatives</Link>
             </Button>
           </div>
 
@@ -247,7 +247,7 @@ export default function HomePage() {
                     })}
                   </div>
 
-                  <Link href={`/initiatives#${init.title.toLowerCase().replace(/\s+/g, '-')}`} className={`font-bold text-sm inline-flex items-center group ${textColors[init.theme as keyof typeof textColors]}`}>
+                  <Link to={`/initiatives#${init.title.toLowerCase().replace(/\s+/g, '-')}`} className={`font-bold text-sm inline-flex items-center group ${textColors[init.theme as keyof typeof textColors]}`}>
                     Explore Initiative <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </motion.div>
@@ -342,7 +342,7 @@ export default function HomePage() {
           <div className="flex justify-between items-end mb-12">
             <h2 className="text-3xl md:text-4xl font-black text-navy">Upcoming Events</h2>
             <Button variant="link" className="text-orange font-bold hidden md:flex group" asChild>
-              <Link href="/news-events">View All Events <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" /></Link>
+              <Link to="/news-events">View All Events <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" /></Link>
             </Button>
           </div>
 
@@ -358,14 +358,14 @@ export default function HomePage() {
                 <p className="text-slate-500 text-sm mb-6 flex-1 flex items-start gap-2">
                   <span className="mt-0.5">•</span> {evt.loc}
                 </p>
-                <Link href="/news-events" className="text-navy font-bold text-sm hover:underline">Learn More →</Link>
+                <Link to="/news-events" className="text-navy font-bold text-sm hover:underline">Learn More →</Link>
               </div>
             ))}
           </div>
           
           <div className="mt-8 text-center md:hidden">
             <Button variant="outline" className="w-full border-2 border-navy text-navy font-bold" asChild>
-              <Link href="/news-events">View All Events</Link>
+              <Link to="/news-events">View All Events</Link>
             </Button>
           </div>
         </div>
@@ -393,7 +393,7 @@ export default function HomePage() {
                     <button className="w-2 h-2 rounded-full bg-slate-200 transition-all hover:bg-slate-300" aria-label="Slide 3"></button>
                   </div>
                   <Button variant="link" className="text-navy font-bold" asChild>
-                    <Link href="/projects#impact">Read More Stories <ArrowRight className="ml-2 w-4 h-4" /></Link>
+                    <Link to="/projects#impact">Read More Stories <ArrowRight className="ml-2 w-4 h-4" /></Link>
                   </Button>
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function HomePage() {
           </div>
           
           <Button asChild size="lg" className="bg-orange hover:bg-orange/90 text-white font-bold h-16 px-10 text-lg shadow-xl shadow-orange/20">
-            <Link href="/get-involved">Join Us Today <ArrowRight className="ml-2 w-5 h-5" /></Link>
+            <Link to="/get-involved">Join Us Today <ArrowRight className="ml-2 w-5 h-5" /></Link>
           </Button>
         </div>
       </section>

@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { StatCounter } from "@/components/StatCounter";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Target, Eye, List, Heart, Lightbulb, Shield, Handshake, Leaf, Star, ArrowRight } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
@@ -19,7 +19,7 @@ export default function AboutPage() {
           <div className="flex flex-col lg:flex-row gap-12 items-center">
             <div className="flex-1">
               <div className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-2">
-                <Link href="/" className="hover:text-navy transition-colors">Home</Link>
+                <Link to="/" className="hover:text-navy transition-colors">Home</Link>
                 <span>/</span>
                 <span className="text-navy">About Us</span>
               </div>
@@ -223,10 +223,10 @@ export default function AboutPage() {
           <h2 className="text-3xl md:text-4xl font-black text-white mb-8">Be Part of the Change</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="bg-orange hover:bg-orange/90 text-white font-bold px-8 h-14 text-base">
-              <Link href="/get-involved">Get Involved</Link>
+              <Link to="/get-involved">Get Involved</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-bold px-8 h-14 text-base">
-              <Link href="/initiatives">Explore Initiatives</Link>
+              <Link to="/initiatives">Explore Initiatives</Link>
             </Button>
           </div>
         </div>
