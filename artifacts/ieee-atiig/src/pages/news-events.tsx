@@ -49,7 +49,7 @@ export default function NewsEventsPage() {
       </section>
 
       {/* Events Section */}
-      <section id="events" className="py-24 bg-white" data-testid="events-section">
+      <section id="upcoming" className="py-24 bg-white" data-testid="events-section">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-10">
             
@@ -89,7 +89,7 @@ export default function NewsEventsPage() {
             </div>
             
             {/* Event Calendar */}
-            <div className="lg:col-span-4 flex flex-col items-center">
+            <div id="calendar" className="lg:col-span-4 flex flex-col items-center scroll-mt-24">
               <h2 className="text-2xl font-black text-navy mb-6">Event Calendar</h2>
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm inline-block w-full max-w-sm">
                 <Calendar
@@ -165,7 +165,7 @@ export default function NewsEventsPage() {
       </section>
 
       {/* Latest News */}
-      <section className="py-24 bg-white" data-testid="latest-news">
+      <section id="news" className="py-24 bg-white scroll-mt-24" data-testid="latest-news">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <h2 className="text-3xl md:text-4xl font-black text-navy">Latest News & Announcements</h2>
@@ -200,7 +200,7 @@ export default function NewsEventsPage() {
       </section>
 
       {/* Photo Gallery */}
-      <section className="py-24 bg-navy text-white overflow-hidden" data-testid="photo-gallery">
+      <section id="gallery" className="py-24 bg-navy text-white overflow-hidden scroll-mt-24" data-testid="photo-gallery">
         <div className="container mx-auto px-4 mb-12">
           <h2 className="text-3xl md:text-4xl font-black mb-4">Event Photo Gallery</h2>
           <p className="text-slate-300 text-lg">Moments of inclusion and innovation from across our programs.</p>

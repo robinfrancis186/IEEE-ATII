@@ -1,6 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { Button } from "@/components/ui/button";
+import volunteerImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_10_PM_(5)_1777748003996.png";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -197,6 +198,12 @@ export default function GetInvolvedPage() {
             
             {/* Impact & FAQ */}
             <div>
+              <div className="mb-8 rounded-3xl overflow-hidden h-48 relative">
+                <img src={volunteerImg} alt="Volunteers working on inclusive technology projects" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/60 to-transparent flex items-end p-6">
+                  <p className="text-white font-bold text-lg">"Every volunteer hour drives real change."</p>
+                </div>
+              </div>
               <div className="bg-slate-50 rounded-3xl p-8 mb-10 border border-slate-100">
                 <h3 className="text-xl font-black text-navy mb-6">Our Impact at a Glance</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

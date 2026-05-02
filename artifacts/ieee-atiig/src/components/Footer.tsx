@@ -72,7 +72,7 @@ export function Footer() {
               <li><Link to="/resources" className="text-slate-300 hover:text-purple transition-colors">Assistive Tech Libraries</Link></li>
               <li><Link to="/resources#research" className="text-slate-300 hover:text-purple transition-colors">Research</Link></li>
               <li><Link to="/resources#standards" className="text-slate-300 hover:text-purple transition-colors">Guidelines</Link></li>
-              <li><Link to="/resources#downloads" className="text-slate-300 hover:text-purple transition-colors">Downloads</Link></li>
+              <li><Link to="/resources#guides" className="text-slate-300 hover:text-purple transition-colors">Downloads & Guides</Link></li>
               <li><Link to="/contact#faq" className="text-slate-300 hover:text-purple transition-colors">FAQs</Link></li>
             </ul>
             <address className="not-italic text-sm text-slate-300 space-y-2">

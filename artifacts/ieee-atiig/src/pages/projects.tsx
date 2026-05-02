@@ -12,6 +12,9 @@ import {
 
 import projectsHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_10_PM_(8)_1777748003996.png";
 import sparshImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(4)_1777748003997.png";
+import communityImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(5)_1777748003997.png";
+import impactImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(6)_1777748003997.png";
+import workshopImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_22_PM_(8)_1777748003997.png";
 
 const lineData = [
   { year: "2020", impact: 2.1 },
@@ -318,30 +321,38 @@ export default function ProjectsPage() {
                 name: "Arun",
                 role: "Sparsh Prosthetic Hand User",
                 quote: "From Dependence to Independence — Sparsh gives me the freedom I never thought possible. I can now work and live with confidence again.",
-                color: "border-orange"
+                color: "border-orange",
+                img: communityImg,
               },
               {
                 name: "Ananya",
                 role: "Student Beneficiary",
                 quote: "Learning Without Barriers — The assistive learning tools helped me continue my education and achieve my dreams.",
-                color: "border-purple"
+                color: "border-purple",
+                img: impactImg,
               },
               {
                 name: "Sajeer/Mohammed",
                 role: "Mobility Device Users",
                 quote: "Mobility Restored — The mobility device built by IEEE Kerala changed my life. I can travel independently to support my family.",
-                color: "border-teal"
+                color: "border-teal",
+                img: workshopImg,
               }
             ].map((story, i) => (
-              <div key={i} className={`bg-slate-50 p-8 rounded-3xl border-t-4 ${story.color} relative mt-6`}>
-                <div className={`absolute -top-6 left-8 w-12 h-12 rounded-full ${story.color.replace('border-', 'bg-')} text-white flex items-center justify-center font-serif text-4xl shadow-md pt-2`}>
-                  "
+              <div key={i} className={`bg-slate-50 rounded-3xl border-t-4 ${story.color} overflow-hidden`}>
+                <div className="h-40 overflow-hidden">
+                  <img src={story.img} alt={story.name} className="w-full h-full object-cover" />
                 </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-6 mt-4">
-                  {story.quote}
-                </p>
-                <div className="font-bold text-navy text-lg">{story.name}</div>
-                <div className="text-sm text-slate-500 font-medium">{story.role}</div>
+                <div className="p-8 relative">
+                  <div className={`absolute -top-5 left-8 w-10 h-10 rounded-full ${story.color.replace('border-', 'bg-')} text-white flex items-center justify-center font-serif text-3xl shadow-md pt-1`}>
+                    "
+                  </div>
+                  <p className="text-slate-700 font-medium leading-relaxed mb-6 mt-2">
+                    {story.quote}
+                  </p>
+                  <div className="font-bold text-navy text-lg">{story.name}</div>
+                  <div className="text-sm text-slate-500 font-medium">{story.role}</div>
+                </div>
               </div>
             ))}
           </div>

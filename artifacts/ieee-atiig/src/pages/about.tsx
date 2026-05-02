@@ -215,7 +215,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <PartnerCarousel />
+      <div id="partners" className="scroll-mt-24"><PartnerCarousel /></div>
 
       {/* CTA block */}
       <section className="py-20 bg-navy text-center" data-testid="about-cta">

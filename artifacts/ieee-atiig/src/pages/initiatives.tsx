@@ -10,8 +10,64 @@ import { Search, Filter, ArrowRight, Lightbulb, Users, BookOpen, Building, Gradu
 import initHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_10_PM_(4)_1777748003995.png";
 import initVariantImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(3)_1777748003997.png";
 
+const allInitiatives = [
+  {
+    id: "innovation-lab",
+    title: "AT Innovation Lab", theme: "navy", status: "Ongoing",
+    icon: <Lightbulb className="w-6 h-6" />,
+    desc: "Our innovation lab develops and prototypes assistive devices and solutions using emerging technologies and user-centered design.",
+    stats: ["18 Projects", "4.3K+ Lives Impacted", "12 Partners"]
+  },
+  {
+    id: "outreach",
+    title: "Community Outreach", theme: "teal", status: "Ongoing",
+    icon: <Users className="w-6 h-6" />,
+    desc: "We collaborate with communities to identify needs, create awareness, and deliver inclusive solutions where they are needed most.",
+    stats: ["65+ Events", "8.7K+ People Reached", "20+ Volunteers"]
+  },
+  {
+    id: "education",
+    title: "Inclusive Education", theme: "purple", status: "Ongoing",
+    icon: <BookOpen className="w-6 h-6" />,
+    desc: "Promoting inclusive learning environments through accessible resources, teacher training, and inclusive learning tools.",
+    stats: ["35+ Institutions", "6.1K+ Students", "80+ Sessions"]
+  },
+  {
+    id: "campus",
+    title: "Accessible Campus Program", theme: "orange", status: "Completed",
+    icon: <Building className="w-6 h-6" />,
+    desc: "Making campuses universally inclusive through audits, retrofitting, awareness campaigns and inclusive infrastructure advocacy.",
+    stats: ["15+ Campuses", "2.8K+ Users", "10+ Audits"]
+  },
+  {
+    id: "capacity",
+    title: "Capacity Building", theme: "teal", status: "Upcoming",
+    icon: <GraduationCap className="w-6 h-6" />,
+    desc: "Workshops, mentoring and hands-on training to build skills in assistive technology, design thinking, and inclusive innovation.",
+    stats: ["40+ Workshops", "3.9K+ Participants", "25+ Mentors"]
+  },
+  {
+    id: "humanitarian",
+    title: "Humanitarian Technology", theme: "navy", status: "In Planning",
+    icon: <Globe className="w-6 h-6" />,
+    desc: "Designing low-cost, scalable assistive solutions for disaster response and refugee and underserved settings.",
+    stats: ["10+ Deployments", "1.6K+ Impacted", "8+ Partners"]
+  }
+];
+
+const statusBadge: Record<string, string> = {
+  Ongoing: "bg-green-100 text-green-800",
+  Upcoming: "bg-blue-100 text-blue-800",
+  Completed: "bg-slate-100 text-slate-600",
+  "In Planning": "bg-amber-100 text-amber-800",
+};
+
 export default function InitiativesPage() {
   const [activeTab, setActiveTab] = useState("All");
+
+  const filtered = activeTab === "All"
+    ? allInitiatives
+    : allInitiatives.filter((i) => i.status === activeTab);
 
   return (
     <Layout>
@@ -90,45 +146,14 @@ export default function InitiativesPage() {
       {/* Initiatives Grid */}
       <section className="py-24 bg-slate-50" data-testid="initiatives-grid">
         <div className="container mx-auto px-4">
+          {filtered.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-slate-500 text-lg font-medium">No initiatives match this filter.</p>
+              <button onClick={() => setActiveTab("All")} className="mt-4 text-navy font-bold hover:underline">Show all initiatives</button>
+            </div>
+          )}
           <div className="grid md:grid-cols-2 gap-8">
-            {[
-              {
-                id: "innovation-lab",
-                title: "AT Innovation Lab", theme: "navy", icon: <Lightbulb className="w-6 h-6" />,
-                desc: "Our innovation lab develops and prototypes assistive devices and solutions using emerging technologies and user-centered design.",
-                stats: ["18 Projects", "4.3K+ Lives Impacted", "12 Partners"]
-              },
-              {
-                id: "outreach",
-                title: "Community Outreach", theme: "teal", icon: <Users className="w-6 h-6" />,
-                desc: "We collaborate with communities to identify needs, create awareness, and deliver inclusive solutions where they are needed most.",
-                stats: ["65+ Events", "8.7K+ People Reached", "20+ Volunteers"]
-              },
-              {
-                id: "education",
-                title: "Inclusive Education", theme: "purple", icon: <BookOpen className="w-6 h-6" />,
-                desc: "Promoting inclusive learning environments through accessible resources, teacher training, and inclusive learning tools.",
-                stats: ["35+ Institutions", "6.1K+ Students", "80+ Sessions"]
-              },
-              {
-                id: "campus",
-                title: "Accessible Campus Program", theme: "orange", icon: <Building className="w-6 h-6" />,
-                desc: "Making campuses universally inclusive through audits, retrofitting, awareness campaigns and inclusive infrastructure advocacy.",
-                stats: ["15+ Campuses", "2.8K+ Users", "10+ Audits"]
-              },
-              {
-                id: "capacity",
-                title: "Capacity Building", theme: "teal", icon: <GraduationCap className="w-6 h-6" />,
-                desc: "Workshops, mentoring and hands-on training to build skills in assistive technology, design thinking, and inclusive innovation.",
-                stats: ["40+ Workshops", "3.9K+ Participants", "25+ Mentors"]
-              },
-              {
-                id: "humanitarian",
-                title: "Humanitarian Technology", theme: "navy", icon: <Globe className="w-6 h-6" />,
-                desc: "Designing low-cost, scalable assistive solutions for disaster response and refugee and underserved settings.",
-                stats: ["10+ Deployments", "1.6K+ Impacted", "8+ Partners"]
-              }
-            ].map((init, i) => {
+            {filtered.map((init, i) => {
               const themeStyles = {
                 navy: { border: "border-l-navy", bg: "bg-navy/10", text: "text-navy", statBg: "bg-navy/5" },
                 teal: { border: "border-l-teal", bg: "bg-teal/10", text: "text-teal", statBg: "bg-teal/5" },
@@ -139,7 +164,7 @@ export default function InitiativesPage() {
 
               return (
                 <motion.div 
-                  key={i} id={init.id}
+                  key={init.id} id={init.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -153,7 +178,7 @@ export default function InitiativesPage() {
                       </div>
                       <h3 className="text-2xl font-bold text-navy">{init.title}</h3>
                     </div>
-                    <span className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full">Active</span>
+                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${statusBadge[init.status] ?? "bg-slate-100 text-slate-600"}`}>{init.status}</span>
                   </div>
                   
                   <p className="text-slate-600 mb-8 flex-1 text-lg leading-relaxed">{init.desc}</p>
@@ -181,8 +206,8 @@ export default function InitiativesPage() {
         </div>
       </section>
 
-      {/* Featured Initiative */}
-      <section className="py-24 bg-white" data-testid="initiatives-featured">
+      {/* Featured Initiative — only shown when viewing all */}
+      {activeTab === "All" && <section className="py-24 bg-white" data-testid="initiatives-featured">
         <div className="container mx-auto px-4">
           <div className="bg-navy rounded-3xl overflow-hidden shadow-xl flex flex-col lg:flex-row">
             <div className="lg:w-1/2">
@@ -214,7 +239,7 @@ export default function InitiativesPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Our Program Journey */}
       <section className="py-24 bg-slate-50" data-testid="initiatives-journey">

@@ -262,7 +262,7 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ & Social */}
-      <section className="py-24 bg-slate-50" data-testid="contact-faq">
+      <section id="faq" className="py-24 bg-slate-50 scroll-mt-24" data-testid="contact-faq">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16">
             <div>
