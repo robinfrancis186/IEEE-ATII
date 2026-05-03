@@ -57,3 +57,12 @@ Sitemap: https://ieee-atiig.replit.app/sitemap.xml
 # AEO / GEO machine-readable summary for LLM-driven answer engines
 # https://llmstxt.org/
 # https://ieee-atiig.replit.app/llms.txt
+
+# AI usage policy (training, retrieval, citation guidance)
+# https://ieee-atiig.replit.app/ai.txt
+
+# Security contact (RFC 9116)
+# https://ieee-atiig.replit.app/.well-known/security.txt
+
+# Site credits
+# https://ieee-atiig.replit.app/humans.txt
