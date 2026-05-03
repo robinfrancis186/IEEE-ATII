@@ -8,3 +8,42 @@
 export interface HealthStatus {
   status: string;
 }
+
+export type ContactSubmissionSubject =
+  (typeof ContactSubmissionSubject)[keyof typeof ContactSubmissionSubject];
+
+export const ContactSubmissionSubject = {
+  general: "general",
+  partner: "partner",
+  volunteer: "volunteer",
+  sponsor: "sponsor",
+  media: "media",
+  other: "other",
+} as const;
+
+export interface ContactSubmission {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  name: string;
+  /** @maxLength 320 */
+  email: string;
+  /** @maxLength 200 */
+  organization?: string;
+  subject: ContactSubmissionSubject;
+  /**
+   * @minLength 1
+   * @maxLength 5000
+   */
+  message: string;
+}
+
+export interface ContactSubmissionResponse {
+  ok: boolean;
+  id: string;
+}
+
+export interface ErrorResponse {
+  message: string;
+}

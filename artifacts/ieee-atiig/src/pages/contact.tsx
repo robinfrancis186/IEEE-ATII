@@ -15,21 +15,77 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
+import { useSubmitContact } from "@workspace/api-client-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, ArrowRight, Activity, Users, Calendar, Heart, Lightbulb, Globe } from "lucide-react";
 import { FaLinkedin, FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 import contactHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(2)_1777748003995.png";
 
+type ContactSubject = "general" | "partner" | "volunteer" | "sponsor" | "media" | "other";
+
 export default function ContactPage() {
   const { toast } = useToast();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [subject, setSubject] = useState<ContactSubject | "">("");
+  const [message, setMessage] = useState("");
+  const [agreed, setAgreed] = useState(false);
+
+  const submitContact = useSubmitContact({
+    mutation: {
+      onSuccess: () => {
+        toast({
+          title: "Message sent!",
+          description: "We'll get back to you within 24 hours.",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+        setName("");
+        setEmail("");
+        setOrganization("");
+        setSubject("");
+        setMessage("");
+        setAgreed(false);
+      },
+      onError: (err) => {
+        toast({
+          title: "Could not send your message",
+          description:
+            err instanceof Error
+              ? err.message
+              : "Something went wrong. Please try again or email us directly.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you within 24 hours.",
-      className: "bg-green-50 border-green-200 text-green-800",
+    if (!subject) {
+      toast({
+        title: "Please select a subject",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!agreed) {
+      toast({
+        title: "Please accept the privacy policy and terms",
+        variant: "destructive",
+      });
+      return;
+    }
+    submitContact.mutate({
+      data: {
+        name: name.trim(),
+        email: email.trim(),
+        organization: organization.trim() || undefined,
+        subject,
+        message: message.trim(),
+      },
     });
   };
 
@@ -162,23 +218,23 @@ export default function ContactPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-slate-700 font-bold">Full Name *</Label>
-                    <Input id="name" required placeholder="Jane Doe" className="bg-white h-12" />
+                    <Input id="name" required placeholder="Jane Doe" className="bg-white h-12" value={name} onChange={(e) => setName(e.target.value)} data-testid="input-name" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-slate-700 font-bold">Email Address *</Label>
-                    <Input id="email" type="email" required placeholder="jane@example.com" className="bg-white h-12" />
+                    <Input id="email" type="email" required placeholder="jane@example.com" className="bg-white h-12" value={email} onChange={(e) => setEmail(e.target.value)} data-testid="input-email" />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="org" className="text-slate-700 font-bold">Organization / Institution</Label>
-                  <Input id="org" placeholder="Your company or university" className="bg-white h-12" />
+                  <Input id="org" placeholder="Your company or university" className="bg-white h-12" value={organization} onChange={(e) => setOrganization(e.target.value)} data-testid="input-organization" />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="subject" className="text-slate-700 font-bold">Subject *</Label>
-                  <Select required>
-                    <SelectTrigger className="bg-white h-12">
+                  <Select required value={subject} onValueChange={(v) => setSubject(v as ContactSubject)}>
+                    <SelectTrigger className="bg-white h-12" data-testid="select-subject">
                       <SelectValue placeholder="Select inquiry type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -194,18 +250,18 @@ export default function ContactPage() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-slate-700 font-bold">Message *</Label>
-                  <Textarea id="message" required rows={5} placeholder="How can we help you?" className="bg-white resize-none" />
+                  <Textarea id="message" required rows={5} placeholder="How can we help you?" className="bg-white resize-none" value={message} onChange={(e) => setMessage(e.target.value)} data-testid="input-message" />
                 </div>
                 
                 <div className="flex items-start space-x-3 pt-2">
-                  <Checkbox id="terms" required className="mt-1" />
+                  <Checkbox id="terms" required className="mt-1" checked={agreed} onCheckedChange={(c) => setAgreed(c === true)} data-testid="checkbox-terms" />
                   <Label htmlFor="terms" className="text-sm text-slate-600 font-normal leading-relaxed">
                     I agree to the <Link to="/privacy" className="text-navy font-medium underline hover:text-orange">privacy policy</Link> and <Link to="/terms" className="text-navy font-medium underline hover:text-orange">terms of use</Link>. We will never spam you or share your details.
                   </Label>
                 </div>
                 
-                <Button type="submit" className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-14 text-base mt-4 shadow-md">
-                  Send Message <ArrowRight className="ml-2 w-5 h-5" />
+                <Button type="submit" disabled={submitContact.isPending} className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-14 text-base mt-4 shadow-md" data-testid="button-submit-contact">
+                  {submitContact.isPending ? "Sending..." : (<>Send Message <ArrowRight className="ml-2 w-5 h-5" /></>)}
                 </Button>
               </form>
             </div>
