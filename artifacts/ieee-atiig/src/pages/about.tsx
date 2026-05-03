@@ -7,11 +7,14 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Target, Eye, List, Heart, Lightbulb, Shield, Handshake, Leaf, Star, ArrowRight } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
+import { useListTeamMembers } from "@workspace/api-client-react";
 
 import aboutHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_10_PM_(6)_1777748003996.png";
 import aboutVariantImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(2)_1777748003996.png";
 
 export default function AboutPage() {
+  const teamQuery = useListTeamMembers();
+  const teamMembers = teamQuery.data ?? [];
   return (
     <Layout>
       <SEO
@@ -184,25 +187,23 @@ export default function AboutPage() {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">The dedicated minds driving our mission forward.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { name: "Dr. S. Prakash", role: "Chair, IEEE Kerala Section", initials: "SP" },
-              { name: "Dr. Neethu G.", role: "Vice Chair, IEEE Kerala Section", initials: "NG" },
-              { name: "Mr. Amal Raj", role: "Secretary, IEEE Kerala ATIIG", initials: "AR" },
-              { name: "Ms. Anjali Menon", role: "Treasurer, IEEE Kerala ATIIG", initials: "AM" },
-              { name: "Mr. Jithin K. & Mr. Abhin K.", role: "Program Leads, IEEE Kerala ATIIG", initials: "JA" },
-              { name: "Ms. Fathima R.", role: "Outreach Lead, IEEE Kerala ATIIG", initials: "FR" },
-            ].map((person, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 group hover:shadow-md transition-shadow">
+          {teamQuery.isLoading && (
+            <div className="text-center py-10 text-slate-400 font-medium" data-testid="team-loading">Loading team…</div>
+          )}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="team-list">
+            {teamMembers.map((person) => (
+              <div key={person.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 group hover:shadow-md transition-shadow">
                 <div className="w-20 h-20 bg-navy text-white rounded-full flex items-center justify-center text-2xl font-bold shrink-0">
                   {person.initials}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-navy group-hover:text-orange transition-colors">{person.name}</h3>
                   <p className="text-sm text-slate-500 mb-3">{person.role}</p>
-                  <a href="https://www.linkedin.com/company/ieee-kerala-section/" target="_blank" rel="noopener noreferrer" className="inline-flex text-slate-400 hover:text-navy transition-colors" aria-label="IEEE Kerala LinkedIn">
-                    <FaLinkedin className="w-5 h-5" />
-                  </a>
+                  {person.linkedinUrl && (
+                    <a href={person.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex text-slate-400 hover:text-navy transition-colors" aria-label={`${person.name} on LinkedIn`}>
+                      <FaLinkedin className="w-5 h-5" />
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

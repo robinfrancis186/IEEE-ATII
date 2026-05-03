@@ -105,3 +105,27 @@ A full 8-page website for the IEEE Kerala Assistive Technology & Inclusive Innov
 - `public/site.webmanifest` for PWA / install metadata.
 - `SEO` helpers: `breadcrumbSchema()`, `faqSchema()`, `eventSchema()` exported from `SEO.tsx`.
 - Site URL constant: `https://ieee-atiig.replit.app` (update in `SEO.tsx` and `sitemap.xml` when production domain changes).
+
+### CMS / Dynamic Content (News, Events, Team)
+News articles, events, and team members are now stored in PostgreSQL and served via the API server, rather than hardcoded in the React pages.
+
+**Database tables** (`lib/db/src/schema/`):
+- `news_items` — `news.ts` — title, description, badge, badge_color, image_url, published_at
+- `events` — `events.ts` — title, category, location, time, starts_at, description, featured, registration_url
+- `team_members` — `team.ts` — name, role, initials, linkedin_url, sort_order
+
+**Public API endpoints** (no auth required, used by the frontend):
+- `GET /api/news` — list news (newest first)
+- `GET /api/events` — list events (soonest first)
+- `GET /api/team` — list team members (by sort_order)
+
+**Admin API endpoints** (require `Authorization: Bearer <ADMIN_TOKEN>` header):
+- `POST /api/news`, `PUT /api/news/:id`, `DELETE /api/news/:id`
+- `POST /api/events`, `PUT /api/events/:id`, `DELETE /api/events/:id`
+- `POST /api/team`, `PUT /api/team/:id`, `DELETE /api/team/:id`
+
+**Admin token**: The admin endpoints are gated by an `ADMIN_TOKEN` secret. To enable them, add `ADMIN_TOKEN` via the Secrets tab (any strong random string). When unset, all admin endpoints return 503 with a clear message; the public GET endpoints continue to work. There is intentionally no default token committed to the repo — never commit one.
+
+**News image handling**: The `imageUrl` column accepts either a normal URL (http/https or `/`) OR a friendly key (`news-hero`, `news-variant`, `hero`, `team`) that maps to a bundled fallback asset in `news-events.tsx`. Admins can store either.
+
+**Frontend usage**: `useListNews`, `useListEvents`, `useListTeamMembers` hooks from `@workspace/api-client-react` (generated from `lib/api-spec/openapi.yaml` via Orval). After editing the OpenAPI spec, run `pnpm --filter @workspace/api-spec run codegen`.

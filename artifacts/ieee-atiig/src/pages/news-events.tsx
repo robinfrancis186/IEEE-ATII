@@ -4,28 +4,75 @@ import { NewsletterStrip } from "@/components/NewsletterStrip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight } from "lucide-react";
+import { useListNews, useListEvents } from "@workspace/api-client-react";
 
 import newsHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(3)_1777748003995.png";
 import newsVariantImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_22_PM_(7)_1777748003997.png";
 import heroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(1)_1777748003994.png";
 import teamImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(1)_1777748003996.png";
 
-const allEvents = [
-  { date: "MAY 15", title: "AT Innovation Hackathon 2025", loc: "UL Cyberpark, Kozhikode, Kerala", time: "10:00 AM-4:00 PM IST", active: true,  category: "Hackathons" },
-  { date: "MAY 28", title: "Webinar: Inclusive Tech for All",          loc: "Online (Zoom)",                time: "6:00 PM-7:30 PM IST",   active: false, category: "Webinars"   },
-  { date: "JUN 10", title: "Community Accessibility Audit Drive",      loc: "Kochi, Kerala",               time: "9:00 AM-1:00 PM IST",   active: false, category: "Community"  },
-  { date: "JUN 22", title: "Inclusive Education Workshop",             loc: "Thiruvananthapuram",          time: "10:30 AM-1:00 PM IST",  active: false, category: "Workshops"  },
-];
+const FALLBACK_IMAGES: Record<string, string> = {
+  "news-hero": newsHeroImg,
+  "news-variant": newsVariantImg,
+  hero: heroImg,
+  team: teamImg,
+};
+
+const FALLBACK_ROTATION = [newsHeroImg, teamImg, heroImg, newsVariantImg];
+
+function resolveImage(url: string, index: number): string {
+  if (FALLBACK_IMAGES[url]) return FALLBACK_IMAGES[url];
+  if (/^https?:\/\//i.test(url) || url.startsWith("/")) return url;
+  return FALLBACK_ROTATION[index % FALLBACK_ROTATION.length];
+}
+
+const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+function formatNewsDate(value: string | Date): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function formatEventDateBadge(value: string | Date): { month: string; day: string } {
+  const d = typeof value === "string" ? new Date(value) : value;
+  return { month: MONTH_ABBR[d.getMonth()] ?? "", day: String(d.getDate()) };
+}
 
 export default function NewsEventsPage() {
   const [date, setDate] = useState<Date | undefined>(new Date(2025, 4, 15));
   const [activeCategory, setActiveCategory] = useState("All Events");
 
-  const filteredEvents = activeCategory === "All Events"
-    ? allEvents
-    : allEvents.filter(e => e.category === activeCategory);
+  const eventsQuery = useListEvents();
+  const newsQuery = useListNews();
+
+  const events = eventsQuery.data ?? [];
+  const news = newsQuery.data ?? [];
+
+  const filteredEvents = useMemo(
+    () =>
+      activeCategory === "All Events"
+        ? events
+        : events.filter((e) => e.category === activeCategory),
+    [events, activeCategory],
+  );
+
+  const featuredEvent = useMemo(
+    () => events.find((e) => e.featured) ?? events[0],
+    [events],
+  );
+
+  const calendarModifiers = useMemo(() => {
+    const eventDates: Date[] = [];
+    const workshopDates: Date[] = [];
+    for (const e of events) {
+      const d = new Date(e.startsAt);
+      if (e.category === "Workshops") workshopDates.push(d);
+      else eventDates.push(d);
+    }
+    return { event: eventDates, workshop: workshopDates };
+  }, [events]);
 
   return (
     <Layout>
@@ -91,33 +138,39 @@ export default function NewsEventsPage() {
                 <CalendarIcon className="w-6 h-6 text-orange" /> Upcoming Events
               </h2>
               
-              <div className="space-y-4">
-                {filteredEvents.length === 0 && (
+              <div className="space-y-4" data-testid="events-list">
+                {eventsQuery.isLoading && (
+                  <div className="text-center py-10 text-slate-400 font-medium">Loading events…</div>
+                )}
+                {!eventsQuery.isLoading && filteredEvents.length === 0 && (
                   <div className="text-center py-10">
                     <p className="text-slate-400 font-medium">No events in this category.</p>
                     <button onClick={() => setActiveCategory("All Events")} className="mt-2 text-navy font-bold hover:underline text-sm">Show all events</button>
                   </div>
                 )}
-                {filteredEvents.map((evt, i) => (
-                  <div key={i} className={`p-5 rounded-xl border transition-all ${evt.active ? 'border-orange bg-orange/5 shadow-sm' : 'border-slate-200 hover:border-navy bg-white'}`}>
-                    <div className="flex gap-4">
-                      <div className="w-16 flex-shrink-0 text-center">
-                        <div className={`text-xs font-black uppercase ${evt.active ? 'text-orange' : 'text-slate-500'}`}>{evt.date.split(' ')[0]}</div>
-                        <div className={`text-2xl font-black ${evt.active ? 'text-orange' : 'text-navy'}`}>{evt.date.split(' ')[1]}</div>
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-navy mb-2 leading-tight">{evt.title}</h3>
-                        <div className="text-xs text-slate-500 space-y-1 mb-4">
-                          <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {evt.loc}</div>
-                          <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {evt.time}</div>
+                {filteredEvents.map((evt) => {
+                  const badge = formatEventDateBadge(evt.startsAt);
+                  return (
+                    <div key={evt.id} className={`p-5 rounded-xl border transition-all ${evt.featured ? 'border-orange bg-orange/5 shadow-sm' : 'border-slate-200 hover:border-navy bg-white'}`}>
+                      <div className="flex gap-4">
+                        <div className="w-16 flex-shrink-0 text-center">
+                          <div className={`text-xs font-black uppercase ${evt.featured ? 'text-orange' : 'text-slate-500'}`}>{badge.month}</div>
+                          <div className={`text-2xl font-black ${evt.featured ? 'text-orange' : 'text-navy'}`}>{badge.day}</div>
                         </div>
-                        <Button size="sm" variant={evt.active ? "default" : "outline"} className={evt.active ? "bg-orange hover:bg-orange/90 text-white font-bold" : "font-bold text-navy"}>
-                          Register
-                        </Button>
+                        <div>
+                          <h3 className="font-bold text-navy mb-2 leading-tight">{evt.title}</h3>
+                          <div className="text-xs text-slate-500 space-y-1 mb-4">
+                            <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {evt.location}</div>
+                            <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {evt.time}</div>
+                          </div>
+                          <Button size="sm" variant={evt.featured ? "default" : "outline"} className={evt.featured ? "bg-orange hover:bg-orange/90 text-white font-bold" : "font-bold text-navy"}>
+                            Register
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             
@@ -130,10 +183,7 @@ export default function NewsEventsPage() {
                   selected={date}
                   onSelect={setDate}
                   className="rounded-md mx-auto"
-                  modifiers={{
-                    event: [new Date(2025, 4, 15), new Date(2025, 4, 28)],
-                    workshop: [new Date(2025, 5, 10), new Date(2025, 5, 22)]
-                  }}
+                  modifiers={calendarModifiers}
                   modifiersStyles={{
                     event: { fontWeight: 'bold', backgroundColor: '#fff3e0', color: '#FD7B09' },
                     workshop: { fontWeight: 'bold', backgroundColor: '#e0f2fe', color: '#023A74' }
@@ -146,38 +196,42 @@ export default function NewsEventsPage() {
               </div>
             </div>
             
-            {/* Featured Event — only shown when there are filtered results */}
-            {filteredEvents.length > 0 && <div className="lg:col-span-4">
-              <h2 className="text-2xl font-black text-navy mb-6">Featured Event</h2>
-              <div className="bg-navy text-white rounded-2xl p-8 shadow-lg h-full flex flex-col relative overflow-hidden">
-                <div className="absolute -right-10 -top-10 w-40 h-40 bg-orange/20 rounded-full blur-2xl"></div>
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-teal/20 rounded-full blur-2xl"></div>
-                
-                <div className="relative z-10 flex flex-col h-full">
-                  <span className="bg-orange text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded w-fit mb-6">Featured</span>
+            {/* Featured Event */}
+            {featuredEvent && (
+              <div className="lg:col-span-4">
+                <h2 className="text-2xl font-black text-navy mb-6">Featured Event</h2>
+                <div className="bg-navy text-white rounded-2xl p-8 shadow-lg h-full flex flex-col relative overflow-hidden">
+                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-orange/20 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-teal/20 rounded-full blur-2xl"></div>
                   
-                  <h3 className="text-3xl font-black mb-4 leading-tight">AT Innovation Hackathon 2025</h3>
-                  
-                  <div className="space-y-3 mb-8 text-slate-300 font-medium">
-                    <div className="flex items-center gap-3">
-                      <CalendarIcon className="w-5 h-5 text-teal" /> May 15, 2025 • 10:00 AM-4:00 PM IST
+                  <div className="relative z-10 flex flex-col h-full">
+                    <span className="bg-orange text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded w-fit mb-6">Featured</span>
+                    
+                    <h3 className="text-3xl font-black mb-4 leading-tight">{featuredEvent.title}</h3>
+                    
+                    <div className="space-y-3 mb-8 text-slate-300 font-medium">
+                      <div className="flex items-center gap-3">
+                        <CalendarIcon className="w-5 h-5 text-teal" /> {new Date(featuredEvent.startsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} • {featuredEvent.time}
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-5 h-5 text-teal shrink-0 mt-0.5" /> 
+                        <span>{featuredEvent.location}</span>
+                      </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-teal shrink-0 mt-0.5" /> 
-                      <span>UL Cyberpark, Kozhikode, Kerala</span>
-                    </div>
+                    
+                    {featuredEvent.description && (
+                      <p className="text-slate-400 text-sm mb-8 flex-1 leading-relaxed">
+                        {featuredEvent.description}
+                      </p>
+                    )}
+                    
+                    <Button className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-14 text-base mt-auto">
+                      Register Now <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
                   </div>
-                  
-                  <p className="text-slate-400 text-sm mb-8 flex-1 leading-relaxed">
-                    Join innovators from across the state for a 24-hour hackathon focused on building accessible hardware and software solutions. Mentorship provided by industry experts.
-                  </p>
-                  
-                  <Button className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-14 text-base">
-                    Register Now <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
                 </div>
               </div>
-            </div>}
+            )}
             
           </div>
         </div>
@@ -208,24 +262,23 @@ export default function NewsEventsPage() {
             <h2 className="text-3xl md:text-4xl font-black text-navy">Latest News & Announcements</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { img: newsHeroImg, date: "May 8, 2025", badge: "NEWS", color: "bg-teal", title: "IEEE Kerala AT Innovation Lab Launched at UL Cyberpark", desc: "New state-of-the-art facility to accelerate assistive technology development." },
-              { img: teamImg, date: "May 5, 2025", badge: "ANNOUNCEMENT", color: "bg-orange", title: "Call for Volunteers: Community Accessibility Audit Drive", desc: "Join our statewide initiative to audit public spaces for accessibility." },
-              { img: heroImg, date: "Apr 28, 2025", badge: "EVENT", color: "bg-purple", title: "Students Win Award at National Assistive Tech Challenge", desc: "Kerala student team recognized for their low-cost smart cane prototype." },
-              { img: newsVariantImg, date: "Apr 20, 2025", badge: "ANNOUNCEMENT", color: "bg-orange", title: "Upcoming Webinar: AI for Accessibility", desc: "Register for our next expert session on utilizing AI for inclusive design." }
-            ].map((news, i) => (
-              <div key={i} className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex flex-col group hover:shadow-lg transition-all">
+          {newsQuery.isLoading && (
+            <div className="text-center py-10 text-slate-400 font-medium">Loading news…</div>
+          )}
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="news-list">
+            {news.map((item, i) => (
+              <div key={item.id} className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex flex-col group hover:shadow-lg transition-all">
                 <div className="h-48 overflow-hidden relative">
-                  <img src={news.img} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className={`absolute top-4 left-4 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded ${news.color}`}>
-                    {news.badge}
+                  <img src={resolveImage(item.imageUrl, i)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className={`absolute top-4 left-4 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded ${item.badgeColor}`}>
+                    {item.badge}
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <div className="text-xs font-bold text-slate-500 mb-3">{news.date}</div>
-                  <h3 className="font-bold text-navy text-lg mb-3 leading-snug group-hover:text-teal transition-colors">{news.title}</h3>
-                  <p className="text-slate-600 text-sm mb-6 flex-1 line-clamp-3">{news.desc}</p>
+                  <div className="text-xs font-bold text-slate-500 mb-3">{formatNewsDate(item.publishedAt)}</div>
+                  <h3 className="font-bold text-navy text-lg mb-3 leading-snug group-hover:text-teal transition-colors">{item.title}</h3>
+                  <p className="text-slate-600 text-sm mb-6 flex-1 line-clamp-3">{item.description}</p>
                   <Link to="/news-events" className="text-navy font-bold text-sm inline-flex items-center group-hover:text-orange transition-colors mt-auto">
                     Read More <ArrowRight className="ml-1 w-4 h-4" />
                   </Link>
