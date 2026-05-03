@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Layout } from "@/components/Layout";
 import SEO, { breadcrumbSchema, faqSchema } from "@/components/SEO";
+import CardFlip from "@/components/CardFlip";
 import { StatCounter } from "@/components/StatCounter";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { NewsletterStrip } from "@/components/NewsletterStrip";
@@ -196,28 +197,83 @@ export default function HomePage() {
             <p className="text-lg text-slate-600">Driving systemic change through strategic interventions across multiple domains.</p>
           </div>
 
+          <p className="text-center text-sm text-slate-500 mb-8 -mt-10" aria-hidden="true">
+            Hover or focus a card to flip and reveal more.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {[
-              { icon: <FlaskConical className="w-8 h-8" />, title: "Research & Innovation", desc: "Developing cutting-edge accessible solutions.", color: "text-navy", bg: "bg-navy/10" },
-              { icon: <HeartHandshake className="w-8 h-8" />, title: "Assistive Solutions", desc: "Creating affordable tools for daily living.", color: "text-teal", bg: "bg-teal/10" },
-              { icon: <Users className="w-8 h-8" />, title: "Community Impact", desc: "Empowering grassroots through awareness.", color: "text-orange", bg: "bg-orange/10" },
-              { icon: <BookOpen className="w-8 h-8" />, title: "Inclusive Education", desc: "Ensuring learning is accessible to everyone.", color: "text-purple", bg: "bg-purple/10" },
-              { icon: <Globe className="w-8 h-8" />, title: "Humanitarian Tech", desc: "Deploying tech for disaster and underserved areas.", color: "text-teal", bg: "bg-teal/10" },
-              { icon: <Users className="w-8 h-8" />, title: "Capacity Building", desc: "Training the next generation of innovators.", color: "text-navy", bg: "bg-navy/10" },
+              {
+                icon: <FlaskConical className="w-7 h-7" />,
+                title: "Research & Innovation",
+                subtitle: "Developing cutting-edge accessible solutions.",
+                description: "We design, prototype, and test affordable assistive technology with universities, hospitals, and community partners across Kerala.",
+                features: ["Applied AT prototypes", "Open hardware projects", "Cross-college research", "Publications & patents"],
+                color: "navy" as const,
+                ctaHref: "/initiatives",
+              },
+              {
+                icon: <HeartHandshake className="w-7 h-7" />,
+                title: "Assistive Solutions",
+                subtitle: "Creating affordable tools for daily living.",
+                description: "Low-cost, durable assistive devices co-designed with end-users to maximise independence and dignity.",
+                features: ["Mobility aids", "Communication devices", "Daily-living tools", "User co-design clinics"],
+                color: "teal" as const,
+                ctaHref: "/projects",
+              },
+              {
+                icon: <Users className="w-7 h-7" />,
+                title: "Community Impact",
+                subtitle: "Empowering grassroots through awareness.",
+                description: "We bring assistive tech and disability awareness directly to villages, schools, and self-help groups across Kerala.",
+                features: ["Awareness camps", "SHG partnerships", "Volunteer drives", "Local-language outreach"],
+                color: "orange" as const,
+                ctaHref: "/get-involved",
+              },
+              {
+                icon: <BookOpen className="w-7 h-7" />,
+                title: "Inclusive Education",
+                subtitle: "Ensuring learning is accessible to everyone.",
+                description: "Audits, teacher training, and assistive learning kits that make classrooms work for every learner.",
+                features: ["Accessibility audits", "Teacher training", "Adaptive learning kits", "Scholarship referrals"],
+                color: "purple" as const,
+                ctaHref: "/initiatives",
+              },
+              {
+                icon: <Globe className="w-7 h-7" />,
+                title: "Humanitarian Tech",
+                subtitle: "Tech for disaster and underserved areas.",
+                description: "Resilient solutions for floods, energy access, and underserved geographies — built fast, deployed in the field.",
+                features: ["Disaster-response kits", "Off-grid energy", "Water-quality sensing", "Field deployments"],
+                color: "teal" as const,
+                ctaHref: "/projects",
+              },
+              {
+                icon: <Users className="w-7 h-7" />,
+                title: "Capacity Building",
+                subtitle: "Training the next generation of innovators.",
+                description: "Workshops, mentorship, and hands-on bootcamps that equip students and professionals to lead inclusive innovation.",
+                features: ["Hands-on workshops", "Mentor matching", "Industry guest series", "Skill certificates"],
+                color: "navy" as const,
+                ctaHref: "/resources",
+              },
             ].map((item, i) => (
-              <motion.div 
-                key={i}
+              <motion.div
+                key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow card-hover"
+                transition={{ delay: i * 0.08 }}
               >
-                <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 ${item.bg} ${item.color}`}>
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-bold text-navy mb-3">{item.title}</h3>
-                <p className="text-slate-600">{item.desc}</p>
+                <CardFlip
+                  icon={item.icon}
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  description={item.description}
+                  features={item.features}
+                  color={item.color}
+                  ctaHref={item.ctaHref}
+                  ctaLabel="Explore"
+                />
               </motion.div>
             ))}
           </div>
