@@ -67,7 +67,7 @@ const NAV_ITEMS = [
       { title: "Become a Member", href: "/get-involved#member" },
       { title: "Partner With Us", href: "/get-involved#partner" },
       { title: "Sponsor Us", href: "/get-involved#sponsor" },
-      { title: "Donate", href: "/get-involved#donate" },
+      { title: "Join Us", href: "/get-involved#join" },
     ],
   },
   {
@@ -197,9 +197,9 @@ export function Header() {
           <Button
             asChild
             className="hidden md:flex bg-[#FD7B09] hover:bg-[#e06b08] text-white font-bold tracking-wide shadow-sm"
-            data-testid="btn-donate-header"
+            data-testid="btn-join-header"
           >
-            <Link to="/get-involved#donate">Donate</Link>
+            <Link to="/get-involved">Join Us</Link>
           </Button>
 
           {/* Mobile Menu */}
@@ -279,13 +279,13 @@ export function Header() {
                   <Button
                     asChild
                     className="w-full bg-[#FD7B09] hover:bg-[#e06b08] text-white font-bold"
-                    data-testid="btn-mobile-donate"
+                    data-testid="btn-mobile-join"
                   >
                     <Link
-                      to="/get-involved#donate"
+                      to="/get-involved"
                       onClick={() => setIsOpen(false)}
                     >
-                      Donate Now
+                      Join Us
                     </Link>
                   </Button>
                 </div>

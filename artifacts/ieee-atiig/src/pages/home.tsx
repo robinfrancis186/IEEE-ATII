@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Layout } from "@/components/Layout";
 import SEO, { breadcrumbSchema, faqSchema } from "@/components/SEO";
 import CardFlip from "@/components/CardFlip";
-import HeroVisual from "@/components/HeroVisual";
+import heroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(1)_1777748003994.png";
+import teamImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(1)_1777748003996.png";
 import { StatCounter } from "@/components/StatCounter";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 import { NewsletterStrip } from "@/components/NewsletterStrip";
@@ -158,12 +159,22 @@ export default function HomePage() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative pb-12"
+              className="relative"
             >
-              <HeroVisual
-                variant="home"
-                quote="Innovation with empathy. Technology with purpose."
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <img src={heroImg} alt="Assistive technology in use" className="rounded-2xl shadow-lg w-full h-52 object-cover col-span-2" />
+                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5 flex flex-col justify-center">
+                  <div className="text-3xl font-black text-navy">25K+</div>
+                  <div className="text-sm font-bold text-slate-500 mt-1">Lives Impacted</div>
+                  <div className="text-xs text-teal mt-1.5 font-semibold">Across Kerala</div>
+                </div>
+                <img src={teamImg} alt="ATIIG team collaboration" className="rounded-2xl shadow-lg w-full h-36 object-cover translate-y-2" />
+              </div>
+              <div className="absolute -bottom-8 -left-8 md:-left-12 bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-xl max-w-xs border-l-4 border-l-orange border-t-4 border-t-teal">
+                <p className="italic text-navy font-medium leading-snug">
+                  "Innovation with empathy. Technology with purpose. Inclusion at every step."
+                </p>
+              </div>
             </motion.div>
           </div>
         </div>

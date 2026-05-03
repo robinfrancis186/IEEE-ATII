@@ -413,7 +413,7 @@ export default function ProjectsPage() {
               <Link to="/get-involved#partner">Partner With Us</Link>
             </Button>
             <Button asChild size="lg" className="bg-orange hover:bg-orange/90 text-white font-bold px-8 h-14 text-base shadow-xl">
-              <Link to="/get-involved#donate">Donate Now</Link>
+              <Link to="/get-involved">Join Us</Link>
             </Button>
           </div>
         </div>

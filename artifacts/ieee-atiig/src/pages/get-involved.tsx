@@ -83,7 +83,7 @@ export default function GetInvolvedPage() {
               { id: "volunteer", icon: <Users className="w-8 h-8" />, title: "Volunteer Opportunities", desc: "Share your time and skills to work on impactful projects that create real impact.", color: "text-teal", bg: "bg-teal/10", btn: "Explore Opportunities" },
               { id: "member", icon: <Star className="w-8 h-8" />, title: "Become a Member", desc: "Join our community of innovators and changemakers.", color: "text-purple", bg: "bg-purple/10", btn: "Learn More" },
               { id: "partner", icon: <Handshake className="w-8 h-8" />, title: "Partner With Us", desc: "Collaborate on initiatives that drive inclusion and innovation.", color: "text-orange", bg: "bg-orange/10", btn: "Explore Partnerships" },
-              { id: "donate", icon: <Heart className="w-8 h-8" />, title: "Support Our Mission", desc: "Donate or contribute to help us build a more inclusive future.", color: "text-navy", bg: "bg-navy/10", btn: "Make a Difference" },
+              { id: "join", icon: <Heart className="w-8 h-8" />, title: "Join Us", desc: "Become part of our community and contribute your skills, ideas and energy to building a more inclusive future.", color: "text-navy", bg: "bg-navy/10", btn: "Get Started" },
             ].map((way, i) => (
               <div key={i} id={way.id} className="bg-slate-50 rounded-2xl p-8 border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow scroll-mt-32">
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${way.bg} ${way.color}`}>
@@ -272,20 +272,20 @@ export default function GetInvolvedPage() {
         </div>
       </section>
 
-      {/* Donation CTA */}
-      <section className="py-20 relative overflow-hidden" data-testid="donate-cta">
+      {/* Join CTA */}
+      <section className="py-20 relative overflow-hidden" data-testid="join-cta">
         <div className="absolute inset-0 bg-gradient-to-r from-purple to-teal opacity-90"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Your Support. Greater Impact.</h2>
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Your Voice. Greater Impact.</h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            Every contribution helps us design better solutions, reach more communities, and break down barriers faster.
+            Join a community of engineers, researchers, and advocates building accessible technology for every Keralite.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Button size="lg" className="bg-navy hover:bg-navy/90 text-white font-bold h-16 px-12 text-lg shadow-xl shadow-navy/20 w-full sm:w-auto">
-              Donate Now
+            <Button asChild size="lg" className="bg-navy hover:bg-navy/90 text-white font-bold h-16 px-12 text-lg shadow-xl shadow-navy/20 w-full sm:w-auto">
+              <a href="#join">Join Us</a>
             </Button>
-            <Button variant="link" className="text-white hover:text-white/80 font-bold text-lg">
-              Other Ways to Give <ArrowRight className="ml-2 w-5 h-5" />
+            <Button asChild variant="link" className="text-white hover:text-white/80 font-bold text-lg">
+              <a href="#volunteer">Other Ways to Help <ArrowRight className="ml-2 w-5 h-5" /></a>
             </Button>
           </div>
         </div>
