@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
-import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, Mic2, Sparkles, Trophy } from "lucide-react";
 import { useListNews, useListEvents } from "@workspace/api-client-react";
 
 import newsHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(3)_1777748003995.png";
@@ -41,7 +41,7 @@ function formatEventDateBadge(value: string | Date): { month: string; day: strin
 }
 
 export default function NewsEventsPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date(2025, 4, 15));
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeCategory, setActiveCategory] = useState("All Events");
 
   const eventsQuery = useListEvents();
@@ -200,32 +200,73 @@ export default function NewsEventsPage() {
             {featuredEvent && (
               <div className="lg:col-span-4">
                 <h2 className="text-2xl font-black text-navy mb-6">Featured Event</h2>
-                <div className="bg-navy text-white rounded-2xl p-8 shadow-lg h-full flex flex-col relative overflow-hidden">
-                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-orange/20 rounded-full blur-2xl"></div>
+                <div className="bg-navy text-white rounded-2xl shadow-lg h-full flex flex-col relative overflow-hidden">
+                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-orange/30 rounded-full blur-2xl"></div>
                   <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-teal/20 rounded-full blur-2xl"></div>
-                  
-                  <div className="relative z-10 flex flex-col h-full">
-                    <span className="bg-orange text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded w-fit mb-6">Featured</span>
-                    
-                    <h3 className="text-3xl font-black mb-4 leading-tight">{featuredEvent.title}</h3>
-                    
-                    <div className="space-y-3 mb-8 text-slate-300 font-medium">
+
+                  {/* Cover image */}
+                  <div className="relative h-44 overflow-hidden">
+                    <img src={newsHeroImg} alt={featuredEvent.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-transparent" />
+                    <span className="absolute top-4 left-4 bg-orange text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded">Featured</span>
+                    <div className="absolute bottom-3 left-4 right-4 flex items-center gap-2 text-xs font-bold text-white/90">
+                      <Trophy className="w-4 h-4 text-orange" />
+                      <span>Prizes worth ₹3,00,000</span>
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 flex flex-col flex-1 p-7">
+                    <h3 className="text-2xl font-black mb-4 leading-tight">{featuredEvent.title}</h3>
+
+                    <div className="space-y-2.5 mb-5 text-slate-300 font-medium text-sm">
                       <div className="flex items-center gap-3">
-                        <CalendarIcon className="w-5 h-5 text-teal" /> {new Date(featuredEvent.startsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} • {featuredEvent.time}
+                        <CalendarIcon className="w-4 h-4 text-teal shrink-0" />
+                        <span>{new Date(featuredEvent.startsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} • {featuredEvent.time}</span>
                       </div>
                       <div className="flex items-start gap-3">
-                        <MapPin className="w-5 h-5 text-teal shrink-0 mt-0.5" /> 
+                        <MapPin className="w-4 h-4 text-teal shrink-0 mt-0.5" />
                         <span>{featuredEvent.location}</span>
                       </div>
                     </div>
-                    
+
                     {featuredEvent.description && (
-                      <p className="text-slate-400 text-sm mb-8 flex-1 leading-relaxed">
+                      <p className="text-slate-400 text-sm mb-5 leading-relaxed line-clamp-3">
                         {featuredEvent.description}
                       </p>
                     )}
-                    
-                    <Button className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-14 text-base mt-auto">
+
+                    {/* Agenda highlights */}
+                    <div className="mb-5">
+                      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-teal mb-2">
+                        <Sparkles className="w-3.5 h-3.5" /> What to Expect
+                      </div>
+                      <ul className="space-y-1.5 text-sm text-slate-200">
+                        <li className="flex items-start gap-2"><span className="text-orange mt-1">•</span> 36-hour build sprint with hardware kits</li>
+                        <li className="flex items-start gap-2"><span className="text-orange mt-1">•</span> Mentorship from industry &amp; persons with disabilities</li>
+                        <li className="flex items-start gap-2"><span className="text-orange mt-1">•</span> Demo day with investor &amp; NGO panel</li>
+                      </ul>
+                    </div>
+
+                    {/* Speakers */}
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-teal mb-3">
+                        <Mic2 className="w-3.5 h-3.5" /> Featured Mentors
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { name: "Dr. Anitha R.", color: "bg-orange/20 text-orange border-orange/40" },
+                          { name: "Pranav K.", color: "bg-teal/20 text-teal border-teal/40" },
+                          { name: "Meera S.", color: "bg-purple/20 text-purple border-purple/40" },
+                          { name: "+ 8 more", color: "bg-white/10 text-white/70 border-white/20" },
+                        ].map((s) => (
+                          <span key={s.name} className={`text-xs font-bold px-3 py-1.5 rounded-full border ${s.color}`}>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-orange hover:bg-orange/90 text-white font-bold h-12 text-base mt-auto">
                       Register Now <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </div>
@@ -297,9 +338,21 @@ export default function NewsEventsPage() {
         </div>
         
         <div className="flex w-full overflow-x-auto pb-8 hide-scrollbar gap-4 px-4 snap-x">
-          {[newsHeroImg, teamImg, heroImg, newsVariantImg, newsHeroImg].map((img, i) => (
+          {[
+            { img: newsHeroImg, caption: "AT Innovation Hackathon 2025", tag: "Hackathon" },
+            { img: teamImg, caption: "Sparsh Demo Day · Trivandrum", tag: "Demo" },
+            { img: heroImg, caption: "Inclusive Education Workshop · Kochi", tag: "Workshop" },
+            { img: newsVariantImg, caption: "Community Outreach · Wayanad", tag: "Community" },
+            { img: newsHeroImg, caption: "AI for Accessibility Webinar", tag: "Webinar" },
+            { img: teamImg, caption: "Volunteer Onboarding · Trivandrum", tag: "Volunteers" },
+          ].map((item, i) => (
             <div key={i} className="relative shrink-0 w-[280px] md:w-[400px] aspect-video rounded-xl overflow-hidden snap-center group cursor-pointer">
-              <img src={img} alt={`Gallery ${i+1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <img src={item.img} alt={item.caption} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/30 to-transparent" />
+              <span className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest text-white bg-orange px-2.5 py-1 rounded">{item.tag}</span>
+              <div className="absolute bottom-3 left-4 right-4 text-white">
+                <p className="font-bold text-sm leading-tight drop-shadow">{item.caption}</p>
+              </div>
               <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span className="text-white font-bold bg-orange px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform">View Image</span>
               </div>

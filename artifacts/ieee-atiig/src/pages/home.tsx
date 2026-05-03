@@ -200,8 +200,11 @@ export default function HomePage() {
             <p className="text-lg text-slate-600">Driving systemic change through strategic interventions across multiple domains.</p>
           </div>
 
-          <p className="text-center text-sm text-slate-500 mb-8 -mt-10" aria-hidden="true">
-            Hover or focus a card to flip and reveal more.
+          <p className="text-center text-sm text-slate-500 mb-8 -mt-10 inline-flex items-center gap-2 mx-auto justify-center w-full" aria-hidden="true">
+            <span className="inline-flex items-center gap-1.5 bg-orange/10 text-orange font-bold px-3 py-1.5 rounded-full text-xs uppercase tracking-wider">
+              Tip
+            </span>
+            Hover or tap a card to flip and reveal what we do.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {[
