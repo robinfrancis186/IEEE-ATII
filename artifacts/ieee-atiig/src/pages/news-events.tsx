@@ -1,46 +1,34 @@
 import { Layout } from "@/components/Layout";
 import SEO, { breadcrumbSchema, eventSchema } from "@/components/SEO";
+import { NewsStateBlock } from "@/components/news/NewsStateBlock";
 import { NewsletterStrip } from "@/components/NewsletterStrip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, Mic2, Sparkles, Trophy } from "lucide-react";
-import { useListNews, useListEvents } from "@workspace/api-client-react";
 import {
-  asArrayOrFallback,
   fallbackEvents,
-  fallbackNews,
   routeMeta,
   SITE_URL,
 } from "@/data/site";
+import { useEvents, useNewsArticles, usePhotoGalleryItems } from "@/lib/sanity/hooks";
+import {
+  formatNewsDate,
+  getCategoryTagStyles,
+  getNewsBadgeStyles,
+  getPrimaryEventCategoryLabel,
+  getPrimaryCategoryLabel,
+  getSanityImageProps,
+} from "@/lib/sanity/presentation";
+import { sanityConfigured } from "@/lib/sanity/client";
 
 import newsHeroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(3)_1777748003995.png";
 import newsVariantImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_22_PM_(7)_1777748003997.png";
 import heroImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_09_PM_(1)_1777748003994.png";
 import teamImg from "@assets/ChatGPT_Image_May_2,_2026,_09_48_21_PM_(1)_1777748003996.png";
 
-const FALLBACK_IMAGES: Record<string, string> = {
-  "news-hero": newsHeroImg,
-  "news-variant": newsVariantImg,
-  hero: heroImg,
-  team: teamImg,
-};
-
-const FALLBACK_ROTATION = [newsHeroImg, teamImg, heroImg, newsVariantImg];
-
-function resolveImage(url: string, index: number): string {
-  if (FALLBACK_IMAGES[url]) return FALLBACK_IMAGES[url];
-  if (/^https?:\/\//i.test(url) || url.startsWith("/")) return url;
-  return FALLBACK_ROTATION[index % FALLBACK_ROTATION.length];
-}
-
 const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-function formatNewsDate(value: string | Date): string {
-  const d = typeof value === "string" ? new Date(value) : value;
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
 
 function formatEventDateBadge(value: string | Date): { month: string; day: string } {
   const d = typeof value === "string" ? new Date(value) : value;
@@ -51,17 +39,77 @@ export default function NewsEventsPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeCategory, setActiveCategory] = useState("All Events");
 
-  const eventsQuery = useListEvents();
-  const newsQuery = useListNews();
+  const eventsQuery = useEvents();
+  const newsQuery = useNewsArticles();
+  const galleryQuery = usePhotoGalleryItems();
 
-  const events = asArrayOrFallback(eventsQuery.data, fallbackEvents);
-  const news = asArrayOrFallback(newsQuery.data, fallbackNews);
+  const events = useMemo(() => {
+    if (!sanityConfigured) return fallbackEvents;
+    return eventsQuery.data && eventsQuery.data.length > 0
+      ? eventsQuery.data
+      : fallbackEvents;
+  }, [eventsQuery.data]);
+  const news = newsQuery.data ?? [];
+  const galleryItems = useMemo(() => {
+    if (sanityConfigured && galleryQuery.data && galleryQuery.data.length > 0) {
+      return galleryQuery.data
+        .map((item) => {
+          const image = getSanityImageProps(item.image);
+          if (!image?.src) return null;
+
+          return {
+            id: item._id,
+            img: image.src,
+            alt: image.alt || item.caption,
+            caption: item.caption,
+            tag: getPrimaryEventCategoryLabel(item.categories),
+            tagClass: getCategoryTagStyles(item.categories) ?? "bg-orange",
+          };
+        })
+        .filter(Boolean) as {
+        id: string;
+        img: string;
+        alt: string;
+        caption: string;
+        tag: string;
+        tagClass: string;
+      }[];
+    }
+
+    return [
+      { id: "fallback-1", img: newsHeroImg, alt: "AT Innovation Hackathon 2025", caption: "AT Innovation Hackathon 2025", tag: "Hackathon", tagClass: "bg-orange" },
+      { id: "fallback-2", img: teamImg, alt: "Sparsh Demo Day in Trivandrum", caption: "Sparsh Demo Day · Trivandrum", tag: "Demo", tagClass: "bg-orange" },
+      { id: "fallback-3", img: heroImg, alt: "Inclusive Education Workshop in Kochi", caption: "Inclusive Education Workshop · Kochi", tag: "Workshop", tagClass: "bg-orange" },
+      { id: "fallback-4", img: newsVariantImg, alt: "Community Outreach in Wayanad", caption: "Community Outreach · Wayanad", tag: "Community", tagClass: "bg-orange" },
+      { id: "fallback-5", img: newsHeroImg, alt: "AI for Accessibility Webinar", caption: "AI for Accessibility Webinar", tag: "Webinar", tagClass: "bg-orange" },
+      { id: "fallback-6", img: teamImg, alt: "Volunteer Onboarding in Trivandrum", caption: "Volunteer Onboarding · Trivandrum", tag: "Volunteers", tagClass: "bg-orange" },
+    ];
+  }, [galleryQuery.data]);
+
+  const eventCategories = useMemo(() => {
+    const categories = new Set<string>();
+    for (const event of events) {
+      if ("categories" in event && Array.isArray(event.categories)) {
+        for (const category of event.categories) {
+          if (category?.title) categories.add(category.title);
+        }
+      } else if ("category" in event && typeof event.category === "string") {
+        categories.add(event.category);
+      }
+    }
+
+    return ["All Events", ...Array.from(categories)];
+  }, [events]);
 
   const filteredEvents = useMemo(
     () =>
       activeCategory === "All Events"
         ? events
-        : events.filter((e: any) => e.category === activeCategory),
+        : events.filter((e: any) =>
+            "categories" in e && Array.isArray(e.categories)
+              ? e.categories.some((category: any) => category?.title === activeCategory)
+              : e.category === activeCategory,
+          ),
     [events, activeCategory],
   );
 
@@ -75,7 +123,13 @@ export default function NewsEventsPage() {
     const workshopDates: Date[] = [];
     for (const e of events) {
       const d = new Date(e.startsAt);
-      if (e.category === "Workshops") workshopDates.push(d);
+      const primaryCategory =
+        "categories" in e && Array.isArray(e.categories)
+          ? getPrimaryEventCategoryLabel(e.categories)
+          : "category" in e && typeof e.category === "string"
+            ? e.category
+            : "Events";
+      if (primaryCategory === "Workshops") workshopDates.push(d);
       else eventDates.push(d);
     }
     return { event: eventDates, workshop: workshopDates };
@@ -169,7 +223,7 @@ export default function NewsEventsPage() {
                 {filteredEvents.map((evt: any) => {
                   const badge = formatEventDateBadge(evt.startsAt);
                   return (
-                    <div key={evt.id} className={`p-5 rounded-xl border transition-all ${evt.featured ? 'border-orange bg-orange/5 shadow-sm' : 'border-slate-200 hover:border-navy bg-white'}`}>
+                    <div key={evt._id ?? evt.id} className={`p-5 rounded-xl border transition-all ${evt.featured ? 'border-orange bg-orange/5 shadow-sm' : 'border-slate-200 hover:border-navy bg-white'}`}>
                       <div className="flex gap-4">
                         <div className="w-16 flex-shrink-0 text-center">
                           <div className={`text-xs font-black uppercase ${evt.featured ? 'text-orange' : 'text-slate-500'}`}>{badge.month}</div>
@@ -179,10 +233,10 @@ export default function NewsEventsPage() {
                           <h3 className="font-bold text-navy mb-2 leading-tight">{evt.title}</h3>
                           <div className="text-xs text-slate-500 space-y-1 mb-4">
                             <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {evt.location}</div>
-                            <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {evt.time}</div>
+                            <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {"displayTime" in evt ? evt.displayTime : evt.time}</div>
                           </div>
                           <Button asChild size="sm" variant={evt.featured ? "default" : "outline"} className={evt.featured ? "bg-orange hover:bg-orange/90 text-white font-bold" : "font-bold text-navy"}>
-                            <a href={evt.registrationUrl ?? "/get-involved#join"}>Register</a>
+                            <a href={evt.registrationUrl ?? "/get-involved#join"}>{"registrationLabel" in evt && evt.registrationLabel ? evt.registrationLabel : "Register"}</a>
                           </Button>
                         </div>
                       </div>
@@ -239,7 +293,7 @@ export default function NewsEventsPage() {
                     <div className="space-y-2.5 mb-5 text-slate-300 font-medium text-sm">
                       <div className="flex items-center gap-3">
                         <CalendarIcon className="w-4 h-4 text-teal shrink-0" />
-                        <span>{new Date(featuredEvent.startsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} • {featuredEvent.time}</span>
+                        <span>{new Date(featuredEvent.startsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} • {"displayTime" in featuredEvent ? featuredEvent.displayTime : featuredEvent.time}</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <MapPin className="w-4 h-4 text-teal shrink-0 mt-0.5" />
@@ -303,7 +357,7 @@ export default function NewsEventsPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-3">
             <span className="text-slate-500 font-bold self-center mr-2">Browse by:</span>
-            {["All Events", "Webinars", "Workshops", "Hackathons", "Community", "Conferences"].map((cat) => (
+            {eventCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -323,30 +377,68 @@ export default function NewsEventsPage() {
             <h2 className="text-3xl md:text-4xl font-black text-navy">Latest News & Announcements</h2>
           </div>
 
-          {newsQuery.isLoading && (
+          {newsQuery.isLoading ? (
             <div className="text-center py-10 text-slate-400 font-medium">Loading news…</div>
-          )}
+          ) : !sanityConfigured ? (
+            <NewsStateBlock
+              eyebrow="Sanity setup pending"
+              title="News CMS is not configured in this frontend yet."
+              description="Add the Sanity project environment variables for this app, then publish your first article from the Studio to populate this section."
+            />
+          ) : news.length === 0 ? (
+            <NewsStateBlock
+              eyebrow="No published articles"
+              title="The newsroom is ready, but there are no published news articles yet."
+              description="Create categories and publish your first rich-text article in Sanity Studio. Published items will appear here in descending order by published date."
+            />
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="news-list">
+              {news.map((item) => {
+                const image = getSanityImageProps(item.coverImage);
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="news-list">
-            {news.map((item: any, i: number) => (
-              <div key={item.id} className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex flex-col group hover:shadow-lg transition-all">
-                <div className="h-48 overflow-hidden relative">
-                  <img src={resolveImage(item.imageUrl, i)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className={`absolute top-4 left-4 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded ${item.badgeColor}`}>
-                    {item.badge}
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="text-xs font-bold text-slate-500 mb-3">{formatNewsDate(item.publishedAt)}</div>
-                  <h3 className="font-bold text-navy text-lg mb-3 leading-snug group-hover:text-teal transition-colors">{item.title}</h3>
-                  <p className="text-slate-600 text-sm mb-6 flex-1 line-clamp-3">{item.description}</p>
-                  <Link to="/news-events" className="text-navy font-bold text-sm inline-flex items-center group-hover:text-orange transition-colors mt-auto">
-                    Read More <ArrowRight className="ml-1 w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+                return (
+                  <article
+                    key={item._id}
+                    className={`rounded-2xl overflow-hidden border flex flex-col group transition-all ${
+                      item.featured
+                        ? "bg-orange/5 border-orange shadow-sm hover:shadow-md"
+                        : "bg-slate-50 border-slate-100 hover:shadow-lg"
+                    }`}
+                  >
+                    <div className="h-48 overflow-hidden relative bg-slate-200">
+                      {image?.src ? (
+                        <img
+                          src={image.src}
+                          alt={image.alt}
+                          width={image.width}
+                          height={image.height}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          style={image.placeholder ? { backgroundImage: `url(${image.placeholder})`, backgroundSize: "cover" } : undefined}
+                        />
+                      ) : (
+                        <div className="flex h-full items-end bg-[linear-gradient(135deg,rgba(2,58,116,0.92),rgba(2,58,116,0.68),rgba(11,184,173,0.72))] p-5">
+                          <span className="max-w-[10rem] text-sm font-bold leading-5 text-white/85">
+                            Visual pending in Sanity
+                          </span>
+                        </div>
+                      )}
+                      <div className={`absolute top-4 left-4 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded ${getNewsBadgeStyles(item.categories)}`}>
+                        {getPrimaryCategoryLabel(item.categories)}
+                      </div>
+                    </div>
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="text-xs font-bold text-slate-500 mb-3">{formatNewsDate(item.publishedAt)}</div>
+                      <h3 className="font-bold text-navy text-lg mb-3 leading-snug group-hover:text-teal transition-colors">{item.title}</h3>
+                      <p className="text-slate-600 text-sm mb-6 flex-1 line-clamp-3">{item.excerpt}</p>
+                      <Link to={`/news/${item.slug}`} className="text-navy font-bold text-sm inline-flex items-center group-hover:text-orange transition-colors mt-auto">
+                        Read Article <ArrowRight className="ml-1 w-4 h-4" />
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -358,18 +450,11 @@ export default function NewsEventsPage() {
         </div>
         
         <div className="flex w-full overflow-x-auto pb-8 hide-scrollbar gap-4 px-4 snap-x">
-          {[
-            { img: newsHeroImg, caption: "AT Innovation Hackathon 2025", tag: "Hackathon" },
-            { img: teamImg, caption: "Sparsh Demo Day · Trivandrum", tag: "Demo" },
-            { img: heroImg, caption: "Inclusive Education Workshop · Kochi", tag: "Workshop" },
-            { img: newsVariantImg, caption: "Community Outreach · Wayanad", tag: "Community" },
-            { img: newsHeroImg, caption: "AI for Accessibility Webinar", tag: "Webinar" },
-            { img: teamImg, caption: "Volunteer Onboarding · Trivandrum", tag: "Volunteers" },
-          ].map((item, i) => (
-            <div key={i} className="relative shrink-0 w-[280px] md:w-[400px] aspect-video rounded-xl overflow-hidden snap-center group cursor-pointer">
-              <img src={item.img} alt={item.caption} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+          {galleryItems.map((item) => (
+            <div key={item.id} className="relative shrink-0 w-[280px] md:w-[400px] aspect-video rounded-xl overflow-hidden snap-center group cursor-pointer">
+              <img src={item.img} alt={item.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/30 to-transparent" />
-              <span className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest text-white bg-orange px-2.5 py-1 rounded">{item.tag}</span>
+              <span className={`absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest text-white px-2.5 py-1 rounded ${item.tagClass}`}>{item.tag}</span>
               <div className="absolute bottom-3 left-4 right-4 text-white">
                 <p className="font-bold text-sm leading-tight drop-shadow">{item.caption}</p>
               </div>
