@@ -13,7 +13,8 @@ export const newsListQuery = `
         _id,
         title,
         "slug": slug.current,
-        description
+        description,
+        tagColor
       },
       coverImage{
         alt,
@@ -44,7 +45,8 @@ export const newsArticleQuery = `
       _id,
       title,
       "slug": slug.current,
-      description
+      description,
+      tagColor
     },
     coverImage{
       alt,
@@ -76,7 +78,33 @@ export const eventListQuery = `
         _id,
         title,
         "slug": slug.current,
-        description
+        description,
+        tagColor
       }
     }
+`;
+
+export const photoGalleryListQuery = `
+  *[_type == "photoGalleryItem"] | order(sortOrder asc) {
+    _id,
+    caption,
+    sortOrder,
+    categories[]->{
+      _id,
+      title,
+      "slug": slug.current,
+      description,
+      tagColor
+    },
+    image{
+      alt,
+      asset->{
+        url,
+        metadata{
+          lqip,
+          dimensions
+        }
+      }
+    }
+  }
 `;

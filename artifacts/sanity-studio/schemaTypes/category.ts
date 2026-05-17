@@ -25,6 +25,22 @@ export const categoryType = defineType({
       rows: 3,
       validation: (rule) => rule.max(240),
     }),
+    defineField({
+      name: "tagColor",
+      title: "Tag color",
+      type: "string",
+      description: "Optional. Used by the frontend for badges and tags.",
+      options: {
+        list: [
+          { title: "Orange", value: "orange" },
+          { title: "Teal", value: "teal" },
+          { title: "Navy", value: "navy" },
+          { title: "Slate", value: "slate" },
+          { title: "Gold", value: "gold" },
+        ],
+        layout: "dropdown",
+      },
+    }),
   ],
   preview: {
     select: {

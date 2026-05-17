@@ -1,5 +1,26 @@
 import type { SanityCategory, SanityImage } from "./types";
 
+function getTagColorToken(categories: SanityCategory[]) {
+  return categories[0]?.tagColor;
+}
+
+export function getCategoryTagStyles(categories: SanityCategory[]) {
+  switch (getTagColorToken(categories)) {
+    case "orange":
+      return "bg-orange";
+    case "teal":
+      return "bg-teal";
+    case "navy":
+      return "bg-navy";
+    case "slate":
+      return "bg-slate-700";
+    case "gold":
+      return "bg-yellow-500";
+    default:
+      return null;
+  }
+}
+
 export function formatNewsDate(value: string | Date) {
   const date = typeof value === "string" ? new Date(value) : value;
   return date.toLocaleDateString("en-US", {
@@ -10,6 +31,9 @@ export function formatNewsDate(value: string | Date) {
 }
 
 export function getNewsBadgeStyles(categories: SanityCategory[]) {
+  const tokenStyle = getCategoryTagStyles(categories);
+  if (tokenStyle) return tokenStyle;
+
   const primary = categories[0]?.slug ?? categories[0]?.title?.toLowerCase() ?? "news";
 
   switch (primary) {

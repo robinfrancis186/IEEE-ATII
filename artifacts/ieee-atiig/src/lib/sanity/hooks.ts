@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchEvents, fetchNewsArticle, fetchNewsArticles } from "./api";
+import { fetchEvents, fetchNewsArticle, fetchNewsArticles, fetchPhotoGalleryItems } from "./api";
 import { isSanityPreviewActive, sanityConfigured } from "./client";
 
 export function useNewsArticles() {
@@ -28,6 +28,16 @@ export function useEvents() {
   return useQuery({
     queryKey: ["sanity-events", preview],
     queryFn: fetchEvents,
+    enabled: sanityConfigured,
+  });
+}
+
+export function usePhotoGalleryItems() {
+  const preview = isSanityPreviewActive();
+
+  return useQuery({
+    queryKey: ["sanity-photo-gallery", preview],
+    queryFn: fetchPhotoGalleryItems,
     enabled: sanityConfigured,
   });
 }

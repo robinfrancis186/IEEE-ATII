@@ -12,9 +12,10 @@ import {
   routeMeta,
   SITE_URL,
 } from "@/data/site";
-import { useEvents, useNewsArticles } from "@/lib/sanity/hooks";
+import { useEvents, useNewsArticles, usePhotoGalleryItems } from "@/lib/sanity/hooks";
 import {
   formatNewsDate,
+  getCategoryTagStyles,
   getNewsBadgeStyles,
   getPrimaryEventCategoryLabel,
   getPrimaryCategoryLabel,
@@ -40,6 +41,7 @@ export default function NewsEventsPage() {
 
   const eventsQuery = useEvents();
   const newsQuery = useNewsArticles();
+  const galleryQuery = usePhotoGalleryItems();
 
   const events = useMemo(() => {
     if (!sanityConfigured) return fallbackEvents;
@@ -48,6 +50,41 @@ export default function NewsEventsPage() {
       : fallbackEvents;
   }, [eventsQuery.data]);
   const news = newsQuery.data ?? [];
+  const galleryItems = useMemo(() => {
+    if (sanityConfigured && galleryQuery.data && galleryQuery.data.length > 0) {
+      return galleryQuery.data
+        .map((item) => {
+          const image = getSanityImageProps(item.image);
+          if (!image?.src) return null;
+
+          return {
+            id: item._id,
+            img: image.src,
+            alt: image.alt || item.caption,
+            caption: item.caption,
+            tag: getPrimaryEventCategoryLabel(item.categories),
+            tagClass: getCategoryTagStyles(item.categories) ?? "bg-orange",
+          };
+        })
+        .filter(Boolean) as {
+        id: string;
+        img: string;
+        alt: string;
+        caption: string;
+        tag: string;
+        tagClass: string;
+      }[];
+    }
+
+    return [
+      { id: "fallback-1", img: newsHeroImg, alt: "AT Innovation Hackathon 2025", caption: "AT Innovation Hackathon 2025", tag: "Hackathon", tagClass: "bg-orange" },
+      { id: "fallback-2", img: teamImg, alt: "Sparsh Demo Day in Trivandrum", caption: "Sparsh Demo Day · Trivandrum", tag: "Demo", tagClass: "bg-orange" },
+      { id: "fallback-3", img: heroImg, alt: "Inclusive Education Workshop in Kochi", caption: "Inclusive Education Workshop · Kochi", tag: "Workshop", tagClass: "bg-orange" },
+      { id: "fallback-4", img: newsVariantImg, alt: "Community Outreach in Wayanad", caption: "Community Outreach · Wayanad", tag: "Community", tagClass: "bg-orange" },
+      { id: "fallback-5", img: newsHeroImg, alt: "AI for Accessibility Webinar", caption: "AI for Accessibility Webinar", tag: "Webinar", tagClass: "bg-orange" },
+      { id: "fallback-6", img: teamImg, alt: "Volunteer Onboarding in Trivandrum", caption: "Volunteer Onboarding · Trivandrum", tag: "Volunteers", tagClass: "bg-orange" },
+    ];
+  }, [galleryQuery.data]);
 
   const eventCategories = useMemo(() => {
     const categories = new Set<string>();
@@ -413,18 +450,11 @@ export default function NewsEventsPage() {
         </div>
         
         <div className="flex w-full overflow-x-auto pb-8 hide-scrollbar gap-4 px-4 snap-x">
-          {[
-            { img: newsHeroImg, caption: "AT Innovation Hackathon 2025", tag: "Hackathon" },
-            { img: teamImg, caption: "Sparsh Demo Day · Trivandrum", tag: "Demo" },
-            { img: heroImg, caption: "Inclusive Education Workshop · Kochi", tag: "Workshop" },
-            { img: newsVariantImg, caption: "Community Outreach · Wayanad", tag: "Community" },
-            { img: newsHeroImg, caption: "AI for Accessibility Webinar", tag: "Webinar" },
-            { img: teamImg, caption: "Volunteer Onboarding · Trivandrum", tag: "Volunteers" },
-          ].map((item, i) => (
-            <div key={i} className="relative shrink-0 w-[280px] md:w-[400px] aspect-video rounded-xl overflow-hidden snap-center group cursor-pointer">
-              <img src={item.img} alt={item.caption} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+          {galleryItems.map((item) => (
+            <div key={item.id} className="relative shrink-0 w-[280px] md:w-[400px] aspect-video rounded-xl overflow-hidden snap-center group cursor-pointer">
+              <img src={item.img} alt={item.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/30 to-transparent" />
-              <span className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest text-white bg-orange px-2.5 py-1 rounded">{item.tag}</span>
+              <span className={`absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest text-white px-2.5 py-1 rounded ${item.tagClass}`}>{item.tag}</span>
               <div className="absolute bottom-3 left-4 right-4 text-white">
                 <p className="font-bold text-sm leading-tight drop-shadow">{item.caption}</p>
               </div>

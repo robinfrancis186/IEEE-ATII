@@ -1,6 +1,6 @@
 import { getSanityClient, sanityConfigured } from "./client";
-import { eventListQuery, newsArticleQuery, newsListQuery } from "./queries";
-import type { SanityEventSummary, SanityNewsArticle, SanityNewsArticleSummary } from "./types";
+import { eventListQuery, newsArticleQuery, newsListQuery, photoGalleryListQuery } from "./queries";
+import type { SanityEventSummary, SanityNewsArticle, SanityNewsArticleSummary, SanityPhotoGalleryItem } from "./types";
 
 export async function fetchNewsArticles() {
   if (!sanityConfigured) return [];
@@ -15,4 +15,9 @@ export async function fetchNewsArticle(slug: string) {
 export async function fetchEvents() {
   if (!sanityConfigured) return [];
   return getSanityClient().fetch<SanityEventSummary[]>(eventListQuery);
+}
+
+export async function fetchPhotoGalleryItems() {
+  if (!sanityConfigured) return [];
+  return getSanityClient().fetch<SanityPhotoGalleryItem[]>(photoGalleryListQuery);
 }

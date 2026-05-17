@@ -3,6 +3,7 @@ export interface SanityCategory {
   title: string;
   slug: string;
   description?: string;
+  tagColor?: "orange" | "teal" | "navy" | "slate" | "gold";
 }
 
 export interface SanityImage {
@@ -48,4 +49,12 @@ export interface SanityEventSummary {
   featured: boolean;
   registrationUrl?: string;
   registrationLabel?: string;
+}
+
+export interface SanityPhotoGalleryItem {
+  _id: string;
+  caption: string;
+  categories: SanityCategory[];
+  image?: SanityImage;
+  sortOrder: number;
 }
